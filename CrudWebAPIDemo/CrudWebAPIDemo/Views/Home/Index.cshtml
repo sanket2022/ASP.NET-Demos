@@ -1,0 +1,210 @@
+﻿@model IEnumerable<CrudWebAPIDemo.Models.Customer>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <table id="tblCustomers" class="table" cellpadding="3" cellspacing="10">
+        <tr>
+            <th styel="width:100px">Customer ID</th>
+            <th styel="width:150px">Name</th>
+            <th styel="width:150px">Country</th>
+            <th styel="width:150px"></th>
+        </tr>
+        @foreach (CrudWebAPIDemo.Models.Customer customer in Model)
+        {
+            <tr>
+                <td>
+                    <span>@customer.CustomerId</span>
+                </td>
+                <td>
+                    <span>@customer.Name</span>
+                    <input type="text" value="@customer.Name" style="display:none" />
+                </td>
+                <td>
+                    <span>@customer.Country</span>
+                    <input type="text" value="@customer.Country" style="display:none" />
+                </td>
+                <td>
+                    <a class="Edit" href="javascript:;">Edit</a>
+                    <a class="Update" href="javascript:;" style="display:none">Update</a>
+                    <a class="Cancel" href="javascript:;" style="display:none">Cancel</a>
+                    <a class="Delete" href="javascript:;">Delete</a>
+                </td>
+            </tr>
+        }
+    </table>
+    <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="width:150px">
+                Name<br />
+                <input type="text" id="txtName" style="width:140px" />
+            </td>
+            <td style="width:150px">
+                Country<br />
+                <input type="text" id="txtCountry" style="width:140px" />
+            </td>
+            <td style="width:200px">
+                <br />
+                <input type="button" id="btnAdd" value="Add" />
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            //remove the dummy row if data present.
+            if ($("#tblCustomers tr").length > 2) {
+                $("#tblCustomers tr:eq(1)").remove();
+            } else {
+                var row = $("#tblCustomers tr:last-child");
+                row.find(".Edit").hide();
+                row.find(".Delete").hide();
+                row.find("span").html('&nbsp');
+            }
+        });
+
+        function AppendRow(row, customerId, name, country) {
+            //bind customerId.
+            $(".CustomerId", row).find("span").html(customerId);
+
+            //bind name
+            $(".Name", row).find("span").html(name);
+            $(".Name", row).find("input").val(name);
+
+            //bind country
+            $(".Country", row).find("span").html(country);
+            $(".Country", row).find("input").val(country);
+
+            row.find(".Edit").show();
+            row.find(".Delete").show();
+
+            $("tblCustomers").append(row);
+        };
+
+        //add event handler
+        $("body").on("click", "#btnAdd", function () {
+            var txtName = $("#txtName");
+            var txtCountry = $("txtCountry");
+            var _customer = {};
+            _customer.Name = txtName.val();
+            _customer.Country = txtCountry.val();
+            $.ajax({
+                type: "POST",
+                url: "/api/AjaxAPI/InsertCustomer",
+                data: JSON.stringify(_customer),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    var row = $("#tblCustomers tr:last-child");
+                    if ($("#tblCustomers tr:last-child span").eq(0).html() != "&nbsp;") {
+                        row = row.clone();
+                    }
+                    AppendRow(row, r, CustomerId, r.Name, r.Country);
+                    txtName.val("");
+                    txtCountry.val("");
+                }
+            });
+        });
+
+        //edit event handler
+        $("body").on("click", "#tblCustomers.Edit", function () {
+            var row = $(this).closset("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    $(this).find("input").show();
+                    $(this).find("span").hide();
+                }
+            });
+            row.find(".Update").show();
+            row.find(".Cancel").show();
+            row.find(".Delete").hide();
+            $(this).hide();
+        });
+
+        //update event handler
+        $("body").on("click", "#tblCustomers .Update", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    span.html(input.val());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Delete").show();
+            row.find(".Cancel").hide();
+            $(this).hide();
+
+            var _customer = {};
+            _customer.CustomerId = row.find(".CustomerId").find("span").html();
+            _customer.Name = row.find(".Name").find("span").html();
+            _customer.Country = row.find(".Country").find("span").html();
+            $.ajax({
+                type: "POST",
+                url: "/api/AjaxAPI/UpdateCustomer",
+                data: JSON.stringify(_customer),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            });
+        });
+
+        //cancel event handler
+        $("body").on("click", "#tblCustomer .Delete", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    input.val(span.html());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Delete").show();
+            row.find(".Update").hide();
+            $(this).hide();
+        });
+
+        //delete event handler
+        $("body").on("click", "#tblCustomers .Delete", function () {
+            if (confirm("Do you want to delete this row?")) {
+                var row = $(this).closest("tr");
+                var _customer = {};
+                _customer.CustomerId = row.find("span").html();
+                $.ajax({
+                    type: "POST",
+                    url: "api/AjaxAPI/DeleteCustomer",
+                    data: JSON.stringify(_customer),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if ($("#tblCustomers tr").length > 2) {
+                            row.remove();
+                        } else {
+                            row.find(".Edit").hide();
+                            row.find(".Delete").hide();
+                            row.find("span").html('&nbsp;');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

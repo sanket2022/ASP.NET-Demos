@@ -1,0 +1,238 @@
+﻿@model Login_Application.Models.Employee
+
+@{
+    ViewBag.Title = "Registration";
+
+}
+
+<h2>Registration</h2>
+
+@using (Html.BeginForm("Registration", "Home", FormMethod.Post, new { @id = "registrationForm" }))
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>Employee</h4>
+        <hr />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Firstname, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 form-inline">
+                @Html.EditorFor(model => model.Firstname, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Firstname, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Lastname, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 form-inline">
+                @Html.EditorFor(model => model.Lastname, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Lastname, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 form-inline">
+                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ConfirmPassword, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 form-inline">
+                @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 form-inline">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Phone, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 form-inline">
+                @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10 form-inline ">
+                @Html.RadioButtonFor(model => model.Gender, "Male")Male 
+                @Html.RadioButtonFor(model => model.Gender, "Female")Female
+                @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger", @id="gender" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Register" class="btn btn-default" />
+            </div>
+        </div>
+
+
+        <div style="color:green;">@ViewBag.SuccessMessage</div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Login", "Login")
+</div>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+
+<style type="text/css">
+    body {
+        font-family: Arial;
+        font-size: 10pt;
+    }
+
+    .error, .text-danger {
+        color: red;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $('#registrationForm').validate({
+            rules: {
+                Firstname: "required",
+                Lastname: "required",
+                Password: "required",
+                ConfirmPassword: {
+                    required: true,
+                    equalTo: "#Password"
+                },
+                Email: {
+                    required: true,
+                    email: true
+                },
+                Phone: {
+                    required: true,
+                    minlength: 10,
+                    maxlength: 10
+                },
+                Gender: {
+                    required: true
+                }
+            },
+            messages: {
+                Firstname: "&nbsp First name required !",
+                Lastname: "&nbsp Last name required !",
+                Password: "&nbsp Password required !",
+                ConfirmPassword: {
+                    required: "&nbsp Confirm Password",
+                    equalTo: "&nbsp Password does not match"
+                },
+                Email: {
+                    required: "&nbsp Email required !",
+                    email: "&nbsp Email is Invalid"
+                },
+                Phone: {
+                    required: "&nbsp Phone number required !",
+                    minlength: "&nbsp Please provide valide phone number",
+                    maxlength: "&nbsp Please provide valide phone number"
+                },
+                Gender: {
+                    required: "Please select the Gender"
+                }
+            }
+        });
+    });
+</script>
+
+<!--
+<script type="text/javascript">
+    $(function () {
+        $('.btn').click(function () {
+            //Gender selection validation
+            var IsGenderSelect = false;
+            $('.Gender').each(function () {
+
+                if ($(this).find('input[type="radio"]:checked').length == 1) {
+                    IsGenderSelect = true;
+                }
+            });
+
+            if (!IsGenderSelect) {
+                //alert('Please select gender.')
+                $(".error ").after('<span class="error">Please specify Gender</span>');
+                //setTimeout(function () {
+                //  $(".error").remove()
+                //}, 3000);
+                return false;
+            }
+        })
+    });
+
+</script>-->
+<!--<script type="text/javascript">
+    /* $(function () {
+         $(".btn").click({
+             rules: {
+                 Firstname: "required",
+                 Lastname: "required",
+                 Password: {
+                     required: true,
+                 },
+                 ConfirmPassword: {
+                     required: true,
+                 },
+                 Email: {
+                     required: true,
+                     email: true
+                 },
+                 phone: {
+                     required: true,
+                     digits: true,
+                     minlength: 10,
+                     maxlength: 10,
+                 },
+                 Gender: {
+                     required: true
+                 }
+
+             },
+             messages: {
+                 firstname: {
+                     required: "Please enter first name",
+                 },
+                 lastname: {
+                     required: "Please enter last name",
+                 },
+                 Password: {
+                     required: "Please enter Password",
+                 },
+                 ConfirmPassword: {
+                     required: "Please Confirm Password",
+                 },
+                 Email: {
+                     required: "Please enter email address",
+                     email: "Please enter a valid email address.",
+                 },
+                 Phone: {
+                     required: "Please enter phone number",
+                     digits: "Please enter valid phone number",
+                     minlength: "Phone number field accept only 10 digits",
+                     maxlength: "Phone number field accept only 10 digits",
+                 },
+                 Gender: {
+                     required: "Please select Gender"
+                 }
+             },
+
+         });
+     });*/
+</script>-->
